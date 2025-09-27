@@ -1,0 +1,134 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: white;
+    color: black;
+    margin: 0;
+  }
+  
+  .profile-page {
+    padding: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+  }
+  .profile-page h3{
+    font-size: 22px;
+  }
+  /* Header */
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .welcome-text {
+    font-size: 2.8rem;
+    color: black;
+  }
+  
+  .highlight {
+    color: #f8d210;
+  }
+  
+  .profile-header p {
+    font-size: 1.2rem;
+    color: #999;
+  }
+  
+  /* Profile Info */
+  .profile-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .profile-card {
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Section-Specific Colors */
+  .personal {
+    background-color: #333;
+    border-left: 4px solid #f8d210;
+  }
+  
+  .achievements {
+    background-color: #3b3939;
+    border-left: 4px solid #f1c40f;
+  }
+  
+  .academics {
+    background-color: #444;
+    border-left: 4px solid #ffdf00;
+  }
+  
+  /* Profile Items */
+  .profile-item {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .profile-item strong {
+    color: #f8d210;
+  }
+  
+  .profile-item span {
+    color: #f1f1f1;
+  }
+  
+  /* Buttons */
+  .profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .btn-primary {
+    background-color: #f8d210;
+    color: #000;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #e0c209;
+  }
+  
+  .btn-secondary {
+    background-color: transparent;
+    color: #f8d210;
+    border: 2px solid #f8d210;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #f8d210;
+    color: #000;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .profile-info {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .profile-info {
+      grid-template-columns: 1fr;
+    }
+  }
+  

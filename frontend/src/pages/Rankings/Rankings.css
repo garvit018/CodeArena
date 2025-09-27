@@ -1,0 +1,124 @@
+/* Rankings.css */
+
+.ranking-page {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.ranking-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ranking-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.ranking-header p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 1rem;
+  border: 1px solid #312020;
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #312020;
+  color: white;
+}
+
+.search-input:focus {
+  border-color: yellow;
+}
+
+/* Table Layout */
+.ranking-table {
+  width: 100%;
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+td {
+  font-size: 1rem;
+}
+
+.trophy {
+  font-size: 1.5rem; /* Larger size for trophies */
+  margin-left: 10px;
+  color: gold;
+}
+
+/* Styling for loading and error messages */
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #f44336;
+  margin-top: 50px;
+}
+
+/* Linear Gradient for Top 3 Users */
+.top-rank {
+  background: linear-gradient(90deg,#ff6600, #ffcc00,  transparent);
+  color: black;
+}
+
+.second-rank {
+  background: linear-gradient(90deg,#808080, #c0c0c0,  transparent);
+  color: black;
+}
+
+.third-rank {
+  background: linear-gradient(90deg,#996633, #cd7f32, transparent);
+  color: black;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 768px) {
+  .ranking-header h1 {
+    font-size: 2rem;
+  }
+
+  .search-input {
+    width: 90%;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  td {
+    font-size: 0.9rem;
+  }
+}

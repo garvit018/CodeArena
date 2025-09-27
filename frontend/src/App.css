@@ -1,0 +1,222 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.collab-wrapper{
+  height: 88vh;
+  width: 98.5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background-color: whitesmoke; /* Dark background */
+}
+
+.homeform-wrapper{
+  background: rgb(230, 208, 208); /* Slightly lighter dark background */
+  padding: 20px;
+  border-radius: 10px;
+  width: 350px;
+  max-width: 90%;
+  color: black; /* Yellow text */
+}
+
+footer{
+  position: fixed;
+  bottom: 0;
+}
+
+footer a{
+  color: black; /* Yellow link */
+}
+
+.collab-logo{
+  height: 60px;
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.logo-wrapper{
+  display: flex;
+  align-items: center;
+}
+
+.logo-wrapper h2{
+  font-weight: bolder;
+  color: black; /* Yellow text for the header */
+}
+
+.inputGroup{
+  display: flex;
+  flex-direction: column;
+}
+
+.mainLabel{
+  font-size: 16px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  color: black; /* Yellow text for the label */
+}
+
+.inputBox{
+  padding: 6px;
+  border-radius: 8px;
+  outline: none;
+  border: 2px solid #f8d210; /* Yellow border */
+  margin-bottom: 14px;
+  background-color: white; /* Dark background */
+  color: black; 
+  font-size: 15px;
+}
+
+.inputBox:focus{
+  box-shadow: 0 0 10px rgba(248, 210, 16, 0.6); /* Yellow glow on focus */
+}
+
+.btn{
+  border: 1px solid black;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.joinBtn{
+  background-color: #8f7a0f; /* Yellow background */
+  width: 100px;
+  margin-left: auto;
+  color: black;
+  font-weight: bold;
+}
+
+.joinBtn:hover{
+  background-color: #b19111; /* Lighter yellow on hover */
+}
+
+.createInfo{
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.createNewBtn{
+  color: goldenrod; /* Yellow text */
+  text-decoration: none;
+  border-bottom: 1px solid #f8d210; /* Yellow underline */
+  transition: all 0.3s ease-in-out;
+}
+
+.createNewBtn:hover{
+  color: green; /* Lighter yellow on hover */
+  border-color: #f1c40f;
+}
+
+footer {
+  color: black;
+}
+footer a{
+  color: rgb(205, 205, 48);
+}
+footer a:hover{
+  color: rgb(154, 154, 25);
+}
+
+.mainWrap{
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  
+}
+
+.aside{
+  background-color: #1c1e29; /* Dark background */
+  padding: 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.asideInner{
+  flex: 1;
+  
+}
+
+.clientsList{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.client{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.username{
+  margin-top: 10px;
+}
+
+.logo{
+  border-bottom: 1px solid #424242;
+  padding-bottom: 10px;
+}
+
+.logoImage{
+  height: 60px;
+}
+
+.leaveBtn{
+  margin-top: 20px;
+  background-color: #f8d210; /* Yellow background */
+  width:100%;
+  margin-left: auto;
+}
+
+.leaveBtn:hover{
+  background-color: #f1c40f; /* Lighter yellow on hover */
+}
+
+.editorWrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  color:  rgb(230, 208, 208);
+  ;
+  align-items: center;
+}
+
+.editor-head{
+  display: flex;
+}
+.CodeMirror {
+  height: 100% !important;
+  border: 1px solid #ccc;
+  
+  
+}
+
+.simple-login-logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+.simple-login-logo .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.simple-login-logo .logo .highlight {
+  color: #f8d210; /* Yellow for Arena */
+  margin-left: 5px;
+}

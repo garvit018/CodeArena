@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+:root {
+  --primary-color: #f8d210;
+  --secondary-color: black;
+  --background-color: #ffffff;
+  --text-color: #333;
+  --gray-color: black;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  line-height: 1.6;
+}
+
+.login-signup-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 0;
+  min-height: 80vh;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Image Styling */
+.login-signup-container img {
+  margin-top: 3rem;
+  width: 98%;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 20px;
+}
+
+/* Form Styling */
+.login-form-container {
+  width: 100%;
+  margin-top: 2rem;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 10px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.form-wrapper {
+  width: 100%;
+  background-color: white;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-header h2 {
+  color: var(--secondary-color);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.form-header p {
+  color: var(--gray-color);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.6rem;
+  margin-bottom: 8px;
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: white;
+  border: 2px solid var(--secondary-color);
+  border-radius: 8px;
+  font-size: 0.6rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 4px 4px 0 var(--primary-color);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 8px;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  border: 1px solid var(--secondary-color);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  box-shadow: 4px 4px 0 var(--secondary-color);
+}
+
+.toggle-section {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--gray-color);
+}
+
+.toggle-link {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design for Mobile Screens */
+@media (max-width: 768px) {
+  .login-form-container {
+    width: 80%;
+    padding: 20px;
+    border-width: 1px;
+    box-shadow: 4px 4px 0 var(--primary-color);
+  }
+
+  .login-signup-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-signup-container img {
+    width: 70%; /* Adjust image size */
+    margin-right: 0;
+    display: none;
+  }
+
+  .form-header h2 {
+    font-size: 1rem;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+  }
+
+  .form-group input {
+    font-size: 0.8rem;
+  }
+
+  .submit-btn {
+    font-size: 0.9rem;
+  }
+
+  .toggle-section p {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-signup-container {
+    padding: 15px;
+    justify-content: flex-start;
+    min-height: auto;
+  }
+
+  .login-form-container {
+    margin-top: 5rem;
+    max-width: 100%;
+    padding: 15px;
+    border-width: 1px;
+    box-shadow: 4px 4px 0 var(--primary-color);
+  }
+
+  .login-signup-container img {
+    display: none; /* Hide the image on small screens */
+  }
+
+  .form-header h2 {
+    font-size: 1rem;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+  }
+
+  .form-group input {
+    font-size: 0.8rem;
+  }
+
+  .submit-btn {
+    font-size: 0.9rem;
+  }
+
+  .toggle-section p {
+    font-size: 0.75rem;
+  }
+}
