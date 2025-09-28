@@ -14,7 +14,6 @@ class Judge0API {
   async createSubmission(languageId, sourceCode, stdin = "") {
     const url = `${this.baseUrl}/submissions?base64_encoded=true&wait=false&fields=*`;
 
-    // Use browser's btoa for Base64 encoding
     const base64SourceCode = btoa(unescape(encodeURIComponent(sourceCode)));
     const base64Stdin = btoa(unescape(encodeURIComponent(stdin)));
 
@@ -56,12 +55,9 @@ class Judge0API {
 
         const result = response.data;
 
-        // Check if processing is complete
         if (result.status.id > 2) {
           return result;
         }
-
-        // Wait before next attempt (increasing delay)
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error);
@@ -87,12 +83,10 @@ class Judge0API {
     console.log("Status Code:", submission.status.id);
     console.log("Status Description:", submission.status.description);
     
-    // Detailed output processing
     console.log("\n--- Execution Details ---");
     console.log("Time Used:", submission.time ? `${submission.time} seconds` : "N/A");
     console.log("Memory Used:", submission.memory ? `${submission.memory} KB` : "N/A");
 
-    // Prepare output object
     const output = {
       status: submission.status.description,
       time: submission.time ? `${submission.time} seconds` : "N/A",
@@ -122,7 +116,6 @@ function Workspace() {
   const JUDGE0_API_KEY = "8fd792c414msha5b799f22d55532p13345ejsnbc9d95444943";
   const judge0 = new Judge0API(JUDGE0_API_KEY);
 
-  // Fetch problem details and languages
   useEffect(() => {
     const fetchProblemDetails = async () => {
       try {
@@ -160,7 +153,6 @@ function Workspace() {
         );
         setLanguages(filteredLanguages);
         
-        // Set default language if available
         const pythonLang = filteredLanguages.find(lang => lang.name.includes("Python"));
         if (pythonLang) {
           setSelectedLanguageId(pythonLang.id);
@@ -175,7 +167,6 @@ function Workspace() {
     fetchLanguages();
   }, [problemId, token]);
 
-  // Handle Code Execution
   const handleExecute = async () => {
     if (!code.trim()) {
       alert("Please provide valid source code.");
@@ -186,16 +177,13 @@ function Workspace() {
     setOutput(null);
 
     try {
-      // Create submission
       const submissionResponse = await judge0.createSubmission(
         selectedLanguageId, 
         code
       );
 
-      // Get submission result
       const submissionResult = await judge0.getSubmission(submissionResponse.token);
       
-      // Process and set output
       const processedOutput = judge0.processSubmissionResults(submissionResult);
       setOutput(processedOutput);
     } catch (error) {
@@ -210,7 +198,6 @@ function Workspace() {
     }
   };
 
-  // Language Selector Component
   const LanguageSelector = () => (
     <div className="language-selector">
       <label htmlFor="language">Select Language:</label>
@@ -228,7 +215,6 @@ function Workspace() {
     </div>
   );
 
-  // Output Preview Component
   const OutputPreview = () => {
     if (!output) return null;
 
@@ -261,7 +247,7 @@ function Workspace() {
       </div>
     );
   };
-  // Mark Problem as Solved
+
   const markProblemAsSolved = async () => {
     try {
       const response = await axios.patch(
