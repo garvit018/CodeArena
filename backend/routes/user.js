@@ -1,14 +1,14 @@
-const express = require('express');
-const User = require('../models/User');
+import express from "express";
+import User from "../models/User.js";
+
 const router = express.Router();
 
-// Get all rankings (sorted by points, for global ranking)
-router.get('/rankings', async (req, res) => {
+router.get("/rankings", async (req, res) => {
   try {
     const rankings = await User.find()
-      .sort({ points: -1 }) // Sort by points in descending order
-      .select('username country points problemsSolved tier')
-      .limit(10); // Limit to top 10 users for example
+      .sort({ points: -1 })
+      .select("username country points problemsSolved tier")
+      .limit(10);
 
     res.json(rankings);
   } catch (err) {
@@ -17,12 +17,13 @@ router.get('/rankings', async (req, res) => {
   }
 });
 
-// Fetch user details
-router.get('/profile', async (req, res) => {
-  const userId = req.user.id; // Assuming JWT token for authentication
+router.get("/profile", async (req, res) => {
+  const userId = req.user.id;
 
   try {
-    const user = await User.findById(userId).select('username country points problemsSolved tier');
+    const user = await User.findById(userId).select(
+      "username country points problemsSolved tier"
+    );
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -33,8 +34,7 @@ router.get('/profile', async (req, res) => {
   }
 });
 
-// Update points after solving a problem
-router.post('/update', async (req, res) => {
+router.post("/update", async (req, res) => {
   const { pointsEarned, problemsSolved } = req.body;
   const userId = req.user.id;
 
@@ -44,7 +44,7 @@ router.post('/update', async (req, res) => {
 
     user.points += pointsEarned;
     user.problemsSolved += problemsSolved;
-    user.updateTier(); // Update the tier based on points
+    user.updateTier();
 
     await user.save();
     res.json({ message: "User updated successfully", user });
@@ -54,4 +54,4 @@ router.post('/update', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
