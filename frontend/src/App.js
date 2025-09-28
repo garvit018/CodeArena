@@ -20,20 +20,16 @@ import ProblemTable from "./pages/Problems/ProblemTable";
 import ProblemService from "./services/ProblemService";
 import Workspace from "./components/Workspace/Workspace";
 
-// Authenticated Route Wrapper
 const AuthenticatedRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
   const isLoggedIn = user || localStorage.getItem("token");
   return isLoggedIn ? children : <Navigate to="/login" />;
 };
 
-// Public Route Wrapper (e.g., for Login/Signup)
 const PublicRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
   return user ? <Navigate to="/home" /> : children;
 };
-
-// Layout Wrapper for Authenticated Routes
 const AuthenticatedLayout = () => (
   <>
     <Navbar />
