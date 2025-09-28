@@ -1,4 +1,3 @@
-// src/context/authContext.js
 import React, { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
@@ -9,14 +8,13 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // Simulate fetching user info from token
-      setUser({ username: "exampleUser" }); // Replace with actual fetch if needed
+      setUser({ username: "exampleUser" });
     }
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem("token", userData.token); // Save token in localStorage
+    localStorage.setItem("token", userData.token);
   };
 
   const logout = () => {

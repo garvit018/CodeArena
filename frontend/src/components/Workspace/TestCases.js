@@ -8,7 +8,7 @@ const TestCases = ({ problemId, code, languageId }) => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
-  const JUDGE0_API_KEY = "8fd792c414msha5b799f22d55532p13345ejsnbc9d95444943";
+  const JUDGE0_API_KEY = "71dd2f88a9mshb19930106ac79bcp175f1ejsnc92887140ab7";
 
   // Fetch test cases for the specific problem
   useEffect(() => {
