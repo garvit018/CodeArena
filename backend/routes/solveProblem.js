@@ -1,8 +1,8 @@
-const express = require('express');
+import express from "express";
+import { solveProblem } from "../controller/ProblemController.js";
+
 const router = express.Router();
-const { solveProblem } = require('../controller/ProblemController'); // Assuming your controller is in problemController.js
 
-// Route to mark a problem as solved and update points
-router.post('/solve', solveProblem);
+router.post("/solve", solveProblem);
 
-module.exports = router;
+export default router;
