@@ -1,39 +1,33 @@
-const mongoose = require('mongoose');
-const Problem = require('../models/Problem');
-const User = require('../models/User');
+import mongoose from "mongoose";
+import Problem from "../models/Problem.js";
+import User from "../models/User.js";
 
-// Function to mark a problem as solved and update points
-const solveProblem = async (req, res) => {
-  const { userId, problemId } = req.body; // Assuming these are passed in the request body
+export const solveProblem = async (req, res) => {
+  const { userId, problemId } = req.body;
 
   try {
-    // Find the problem by the 'id' field (not '_id')
-    const problem = await Problem.findOne({ id: problemId }); // Use 'id' field here
-    if (!problem) return res.status(404).json({ message: 'Problem not found' });
+    const problem = await Problem.findOne({ id: problemId });
+    if (!problem) return res.status(404).json({ message: "Problem not found" });
 
-    // Check if the problem is already solved
-    if (problem.solved === 'Yes') {
-      return res.status(400).json({ message: 'Problem already solved' });
+    if (problem.solved === "Yes") {
+      return res.status(400).json({ message: "Problem already solved" });
     }
 
-    // Mark the problem as solved
-    problem.solved = 'Yes';
+    problem.solved = "Yes";
     await problem.save();
 
-    // Find the user and update their points
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Add points based on problem difficulty
     let pointsToAdd = 0;
     switch (problem.difficulty) {
-      case 'Easy':
+      case "Easy":
         pointsToAdd = 100;
         break;
-      case 'Medium':
+      case "Medium":
         pointsToAdd = 300;
         break;
-      case 'Hard':
+      case "Hard":
         pointsToAdd = 500;
         break;
       default:
@@ -41,23 +35,19 @@ const solveProblem = async (req, res) => {
     }
 
     user.points += pointsToAdd;
+    user.tier = user.calculateTier();
+    await user.save();
 
-    // Update the user's tier based on points
-    user.tier = user.calculateTier(); // Recalculate tier
-    await user.save(); // Save the updated user
-
-    // Return success response
     return res.status(200).json({
       success: true,
-      message: 'Problem marked as solved',
+      message: "Problem marked as solved",
       pointsAwarded: pointsToAdd,
       user,
     });
   } catch (error) {
     console.error("Error solving problem:", error);
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
-
-
-module.exports = { solveProblem };
