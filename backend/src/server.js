@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ['https://codearena-o64w.onrender.com', 'http://localhost:3000'];
+      const allowedOrigins = ['http://localhost:3000'];
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
         callback(null, true); // Allow the origin
       } else {
