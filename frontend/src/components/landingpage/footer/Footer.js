@@ -24,12 +24,12 @@ const Footer = () => {
           </div>
           <div>
             <h3>Contact Us</h3>
-            <p>Email: chauhankhushnam@gmail.com</p>
-            <p>Phone: +91 862310732</p>
+            <p>Email: garvitgoyal83@gmail.com</p>
+            <p>Phone: +91 7976166814</p>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2024 CodeArena. All rights reserved.</p>
+          <p>&copy; 2025 CodeArena. All rights reserved.</p>
         </div>
       </div>
     </footer>

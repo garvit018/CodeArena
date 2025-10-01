@@ -36,7 +36,7 @@ app.use(
 );
 
 mongoose
-  .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGO_URL, )
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error.message);
@@ -89,10 +89,19 @@ app.get('/api/rankings', async (req, res) => {
   }
 });
 
-app.get('/api/problems', authenticateToken, async (req, res) => {
+app.get('/api/problems', async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).send('User not found');
+    const authHeader = req.header('Authorization');
+    const token = authHeader?.split(' ')[1];
+    let user = null;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = await User.findById(decoded.id);
+      } catch (err) {
+        // Invalid token, proceed without user
+      }
+    }
 
     const problems = await Problems.find();
     if (!problems || problems.length === 0) return res.status(404).send('No problems found');
@@ -104,7 +113,7 @@ app.get('/api/problems', authenticateToken, async (req, res) => {
         difficulty: problem.difficulty,
         category: problem.category,
         order: problem.order,
-        solved: user.solvedProblems.some(
+        solved: user && user.solvedProblems.some(
           (solvedProblemId) => solvedProblemId.toString() === problem._id.toString()
         )
           ? 'Yes'
