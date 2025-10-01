@@ -11,9 +11,8 @@ function ProblemService() { // Uppercase first letter
     useEffect(() => {
       async function fetchProblems() {
         try {
-          // Use the environment variable for the backend URL
           const response = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/problems`
+            `http://localhost:5000/api/problems`
           );
           setProblems(response.data.problems);
           toast.success("Problems fetched successfully");
