@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
@@ -19,6 +18,7 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
+// ✅ CORS setup
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -35,14 +35,58 @@ app.use(
   })
 );
 
+// ✅ MongoDB connect + Auto-seed Problems
 mongoose
-  .connect(process.env.MONGO_URL, )
-  .then(() => console.log('Connected to MongoDB'))
+  .connect(process.env.MONGO_URL)
+  .then(async () => {
+    console.log('Connected to MongoDB ✅');
+
+    const count = await Problems.countDocuments();
+    if (count === 0) {
+      await Problems.insertMany([
+        {
+          id: "two-sum",
+          title: "Two Sum",
+          difficulty: "Easy",
+          category: "Array",
+          order: 1,
+          description: "Find two numbers such that they add up to a target.",
+          examples: ["Input: nums=[2,7,11,15], target=9", "Output: [0,1]"],
+          constraints: ["Only one valid answer exists."],
+          points: 10,
+        },
+        {
+          id: "longest-substring",
+          title: "Longest Substring Without Repeating Characters",
+          difficulty: "Medium",
+          category: "String",
+          order: 2,
+          description: "Find the length of the longest substring without repeating characters.",
+          examples: ["Input: s='abcabcbb'", "Output: 3"],
+          constraints: ["1 <= s.length <= 5 * 10^4"],
+          points: 20,
+        },
+        {
+          id: "median-two-arrays",
+          title: "Median of Two Sorted Arrays",
+          difficulty: "Hard",
+          category: "Array",
+          order: 3,
+          description: "Find the median of two sorted arrays.",
+          examples: ["Input: nums1=[1,3], nums2=[2]", "Output: 2.0"],
+          constraints: ["The overall run time complexity should be O(log (m+n))."],
+          points: 30,
+        },
+      ]);
+      console.log("Problems auto-seeded ✅");
+    }
+  })
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error.message);
     process.exit(1);
   });
 
+// ✅ JWT Authentication Middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
   const token = authHeader?.split(' ')[1];
@@ -56,9 +100,11 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// ✅ Auth routes
 app.use('/auth/signup', signup);
 app.use('/auth/login', login);
 
+// ✅ Get logged-in user
 app.get('/api/user', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -80,6 +126,7 @@ app.get('/api/user', authenticateToken, async (req, res) => {
   }
 });
 
+// ✅ Rankings
 app.get('/api/rankings', async (req, res) => {
   try {
     const users = await User.find().sort({ points: -1 });
@@ -89,6 +136,7 @@ app.get('/api/rankings', async (req, res) => {
   }
 });
 
+// ✅ All problems
 app.get('/api/problems', async (req, res) => {
   try {
     const authHeader = req.header('Authorization');
@@ -99,7 +147,7 @@ app.get('/api/problems', async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         user = await User.findById(decoded.id);
       } catch (err) {
-        // Invalid token, proceed without user
+        // Invalid token, ignore
       }
     }
 
@@ -126,6 +174,7 @@ app.get('/api/problems', async (req, res) => {
   }
 });
 
+// ✅ Problem by ID
 app.get('/api/problems/:id', authenticateToken, async (req, res) => {
   try {
     const problem = await Problems.findById(req.params.id);
@@ -148,6 +197,7 @@ app.get('/api/problems/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// ✅ User stats
 app.get('/api/user/stats', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -163,6 +213,7 @@ app.get('/api/user/stats', authenticateToken, async (req, res) => {
   }
 });
 
+// ✅ Mark problem solved
 app.patch('/api/problems/:problemId/solve', authenticateToken, async (req, res) => {
   try {
     const { id: userId } = req.user;
@@ -197,6 +248,7 @@ app.patch('/api/problems/:problemId/solve', authenticateToken, async (req, res) 
   }
 });
 
+// ✅ Socket.IO setup
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -240,5 +292,6 @@ io.on('connection', (socket) => {
   });
 });
 
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
