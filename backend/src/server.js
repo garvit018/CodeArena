@@ -9,26 +9,18 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Problems from '../models/Problem.js';
 import { ACTIONS } from './Actions.js';
-import { signup, login } from '../routes/auth.js';
+import authRouter from '../routes/auth.js';
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-
 app.use(express.json());
 
-// ✅ CORS setup
+// ✅ CORS Fix
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = ['https://code-arena-inky.vercel.app'];
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: 'https://code-arena-inky.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -86,11 +78,9 @@ mongoose
     process.exit(1);
   });
 
-// ✅ JWT Authentication Middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
   const token = authHeader?.split(' ')[1];
-
   if (!token) return res.status(401).send('Access Denied');
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -100,9 +90,8 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// ✅ Auth routes
-app.use('/auth/signup', signup);
-app.use('/auth/login', login);
+// ✅ Routes
+app.use('/auth', authRouter);
 
 // ✅ Get logged-in user
 app.get('/api/user', authenticateToken, async (req, res) => {

@@ -1,8 +1,12 @@
+// routes/auth.js
+import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
-const signup = async (req, res) => {
+const router = express.Router();
+
+router.post("/signup", async (req, res) => {
   const { username, email, password, country, institute, course } = req.body;
 
   if (!username || !email || !password || !country || !institute || !course) {
@@ -40,9 +44,9 @@ const signup = async (req, res) => {
     console.error("Error during signup:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
-};
+});
 
-const login = async (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("Login attempt:", { email, password });
 
@@ -67,6 +71,6 @@ const login = async (req, res) => {
     console.error("Error during login:", error);
     res.status(500).json({ message: "An error occurred", error: error.message });
   }
-};
+});
 
-export { signup, login };
+export default router;
