@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ['https://code-arena-inky.vercel.app'];
+      const allowedOrigins = ['https://code-arena-inky.vercel.app','http://localhost:3000'];
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
         callback(null, true);
       } else {
