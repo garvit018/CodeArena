@@ -120,7 +120,7 @@ function Workspace() {
     const fetchProblemDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/problems/${problemId}`,
+          `https://codearena-653z.onrender.com/api/problems/${problemId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -251,7 +251,7 @@ function Workspace() {
   const markProblemAsSolved = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/problems/${problemId}/solve`,
+        `https://codearena-653z.onrender.com/api/problems/${problemId}/solve`,
         {},
         {
           headers: {
