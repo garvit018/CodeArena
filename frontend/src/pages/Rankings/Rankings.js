@@ -15,7 +15,7 @@ const Rankings = () => {
     const fetchRankingData = async () => {
       try {
         // Fetch rankings using the backend URL from .env
-        const response = await fetch(`http://localhost:5000/api/rankings`);
+        const response = await fetch(`https://codearena-653z.onrender.com/api/rankings`);
         if (!response.ok) {
           throw new Error("Failed to fetch ranking data");
         }

@@ -10,14 +10,14 @@ const ProblemTable = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
-  const apiUrl = "http://localhost:5000/api";
+  const apiUrl = "https://codearena-653z.onrender.com/api";
   console.log(apiUrl);  // Should print http://localhost:5000/api
 
   useEffect(() => {
     const fetchProblems = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:5000/api/problems`, {
+        const response = await axios.get(`https://codearena-653z.onrender.com/api/problems`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

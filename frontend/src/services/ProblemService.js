@@ -12,7 +12,7 @@ function ProblemService() { // Uppercase first letter
       async function fetchProblems() {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/problems`
+            `https://codearena-653z.onrender.com/api/problems`
           );
           setProblems(response.data.problems);
           toast.success("Problems fetched successfully");

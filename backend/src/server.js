@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ['http://localhost:3000'];
+      const allowedOrigins = ['https://code-arena-inky.vercel.app/'];
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
         callback(null, true);
       } else {
@@ -251,7 +251,7 @@ app.patch('/api/problems/:problemId/solve', authenticateToken, async (req, res) 
 // ✅ Socket.IO setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'https://code-arena-inky.vercel.app/',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
