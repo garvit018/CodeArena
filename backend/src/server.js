@@ -18,6 +18,10 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('Pong');
+});
+
 // ✅ CORS setup
 app.use(
   cors({
