@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import "../App.css";
+import { initSocket } from "../socket";
+import { useLocation } from "react-router-dom";
+import Client from "../components/Client";
+import ACTIONS from "../Actions";
+import toast from "react-hot-toast";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import CollaborativeEditor from "../components/Editor";
 import axios from "axios";
-import Split from "react-split";
-import { useParams, useNavigate } from "react-router-dom";
-import ProblemDescription from "./ProblemDescription";
-import CodeEditor from "./CodeEditor";
 
+// Judge0 API class (same as in Workspace component)
 class Judge0API {
   constructor(apiKey) {
     this.apiKey = apiKey;
@@ -14,6 +19,7 @@ class Judge0API {
   async createSubmission(languageId, sourceCode, stdin = "") {
     const url = `${this.baseUrl}/submissions?base64_encoded=true&wait=false&fields=*`;
 
+    // Use browser's btoa for Base64 encoding
     const base64SourceCode = btoa(unescape(encodeURIComponent(sourceCode)));
     const base64Stdin = btoa(unescape(encodeURIComponent(stdin)));
 
@@ -55,9 +61,12 @@ class Judge0API {
 
         const result = response.data;
 
+        // Check if processing is complete
         if (result.status.id > 2) {
           return result;
         }
+
+        // Wait before next attempt (increasing delay)
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       } catch (error) {
         console.error(`Attempt ${attempt} failed:`, error);
@@ -83,10 +92,12 @@ class Judge0API {
     console.log("Status Code:", submission.status.id);
     console.log("Status Description:", submission.status.description);
     
+    // Detailed output processing
     console.log("\n--- Execution Details ---");
     console.log("Time Used:", submission.time ? `${submission.time} seconds` : "N/A");
     console.log("Memory Used:", submission.memory ? `${submission.memory} KB` : "N/A");
 
+    // Prepare output object
     const output = {
       status: submission.status.description,
       time: submission.time ? `${submission.time} seconds` : "N/A",
@@ -100,41 +111,26 @@ class Judge0API {
   }
 }
 
-function Workspace() {
-  const { problemId } = useParams();
-  const navigate = useNavigate();
-  const [details, setDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [code, setCode] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [output, setOutput] = useState(null);
+function EditorPage() {
+  const location = useLocation();
+  const socketRef = useRef(null);
+  const reactNavigator = useNavigate();
+  const codeRef = useRef(null);
+  const { roomId } = useParams();
+  const [clients, setClients] = useState([]);
+  
+  // Code Execution State
   const [languages, setLanguages] = useState([]);
   const [selectedLanguageId, setSelectedLanguageId] = useState(92); // Default to Python
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [output, setOutput] = useState(null);
 
-  const token = localStorage.getItem("token");
+  // Judge0 API setup
   const JUDGE0_API_KEY = "8fd792c414msha5b799f22d55532p13345ejsnbc9d95444943";
   const judge0 = new Judge0API(JUDGE0_API_KEY);
 
+  // Fetch available languages on component mount
   useEffect(() => {
-    const fetchProblemDetails = async () => {
-      try {
-        const response = await axios.get(
-          `https://codearena-653z.onrender.com/api/problems/${problemId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setDetails(response.data);
-      } catch (error) {
-        setError("Error fetching problem details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchLanguages = async () => {
       try {
         const response = await axios.get(
@@ -153,23 +149,24 @@ function Workspace() {
         );
         setLanguages(filteredLanguages);
         
+        // Set default language if available
         const pythonLang = filteredLanguages.find(lang => lang.name.includes("Python"));
         if (pythonLang) {
           setSelectedLanguageId(pythonLang.id);
         }
       } catch (error) {
         console.error("Error fetching languages:", error);
-        setError("Failed to load programming languages.");
+        toast.error("Failed to load programming languages.");
       }
     };
 
-    fetchProblemDetails();
     fetchLanguages();
-  }, [problemId, token]);
+  }, []);
 
+  // Handle Code Execution
   const handleExecute = async () => {
-    if (!code.trim()) {
-      alert("Please provide valid source code.");
+    if (!codeRef.current || !codeRef.current.trim()) {
+      toast.error("Please provide valid source code.");
       return;
     }
 
@@ -177,17 +174,28 @@ function Workspace() {
     setOutput(null);
 
     try {
+      // Create submission
       const submissionResponse = await judge0.createSubmission(
         selectedLanguageId, 
-        code
+        codeRef.current
       );
 
+      // Get submission result
       const submissionResult = await judge0.getSubmission(submissionResponse.token);
       
+      // Process and set output
       const processedOutput = judge0.processSubmissionResults(submissionResult);
       setOutput(processedOutput);
+      
+      // Show toast for different output scenarios
+      if (processedOutput.status === "Accepted") {
+        toast.success("Code executed successfully!");
+      } else {
+        toast.error(`Execution failed: ${processedOutput.status}`);
+      }
     } catch (error) {
       console.error("Execution Error:", error);
+      toast.error("Failed to execute code");
       setOutput({
         status: "Error",
         stdout: "Failed to execute code",
@@ -198,6 +206,7 @@ function Workspace() {
     }
   };
 
+  // Language Selector Component
   const LanguageSelector = () => (
     <div className="language-selector">
       <label htmlFor="language">Select Language:</label>
@@ -215,6 +224,7 @@ function Workspace() {
     </div>
   );
 
+  // Output Preview Component
   const OutputPreview = () => {
     if (!output) return null;
 
@@ -248,53 +258,110 @@ function Workspace() {
     );
   };
 
-  const markProblemAsSolved = async () => {
-    try {
-      const response = await axios.patch(
-        `https://codearena-653z.onrender.com/api/problems/${problemId}/solve`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+  const handleErrors = useCallback((e) => {
+    console.log("socket error", e);
+    toast.error("Socket connection failed, try again later");
+    reactNavigator("/home");
+  }, [reactNavigator]);
+
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket();
+      socketRef.current.on("connect_error", (err) => handleErrors(err));
+      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+      socketRef.current.emit(ACTIONS.JOIN, {
+        roomId,
+        username: location.state?.username,
+      });
+      // listening for joined event
+      socketRef.current.on(
+        ACTIONS.JOINED,
+        ({ clients, username, socketId }) => {
+          if (username !== location.state?.username) {
+            toast.success(` ${username} has joined the room`);
+            console.log(`${username} joined`);
+          }
+          setClients(clients);
+          socketRef.current.emit(ACTIONS.SYNC_CODE,{
+            code:codeRef.current,
+            socketId,
+          });
         }
       );
+      //listening for disconnected
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+        toast.success(`${username} left the room`);
+        setClients((prev) => {
+          return prev.filter(
+            (client) => client.socketId !== socketId);
+        });
+      });
+    };
+    init();
+    return ()=>{
+       socketRef.current.disconnect();
+       socketRef.current.off(ACTIONS.JOINED);
+       socketRef.current.off(ACTIONS.DISCONNECTED);
+    }
+  }, [roomId, location.state?.username, handleErrors]);
 
-      if (response.data.success) {
-        alert(
-          `Problem marked as solved! Earned ${response.data.pointsAwarded} points.`
-        );
-        navigate("/problemtable");
-      }
-    } catch (error) {
-      alert("Failed to mark the problem as solved.");
+  async function copyRoomId(){
+    try{
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Room ID copied to clipboard");
+    }catch(err){
+      toast.error('could not copy Room Id');
+      console.error();
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  function leaveRoom(){
+    reactNavigator('/home');
+  }
 
+  if (!location.state) {
+    return <Navigate to="/home" />;
+  }
 
   return (
-    <Split className="split-horizontal" direction="horizontal" sizes={[50, 50]} gutterSize={10}>
-      <div className="workspace-panel">
-        <ProblemDescription details={details} />
+    <div className="mainWrap">
+      <div className="aside">
+        <div className="asideInner">
+          <h3>connected</h3>
+          <div className="clientsList">
+            {clients.map((client) => (
+              <Client key={client.socketId} username={client.username} />
+            ))}
+          </div>
+        </div>
+        <button className="btn copyBtn" onClick={copyRoomId}>Copy ROOM ID</button>
+        <button className="btn leaveBtn" onClick={leaveRoom}>Leave</button>
       </div>
-      <div className="workspace-panel">
-        <LanguageSelector />
-        <CodeEditor code={code} setCode={setCode} />
-        <button 
-          onClick={handleExecute} 
-          disabled={isSubmitting}
-          className="execute-button"
-        >
-          {isSubmitting ? "Executing..." : "Execute Code"}
-        </button>
+      <div className="editorWrap">
+       <div className="editor-head">
+       <LanguageSelector />
+        <div className="execution-controls">
+          <button 
+            onClick={handleExecute} 
+            disabled={isSubmitting}
+            className="execute-button"
+          >
+            {isSubmitting ? "Executing..." : "Execute Code"}
+          </button>
+        </div>
+       </div>
+        <CollaborativeEditor 
+          socketRef={socketRef} 
+          roomId={roomId} 
+          onCodeChange={(code)=>{
+            codeRef.current = code;
+          }}
+        />
+       
         <OutputPreview />
-      <button onClick={markProblemAsSolved}>Submit</button>
       </div>
-    </Split>
+    </div>
   );
 }
 
-export default Workspace;
+export default EditorPage;

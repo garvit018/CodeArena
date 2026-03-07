@@ -6,19 +6,18 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { AuthContext } from "./context/authContext";
-import Home from "./pages/Home";
-import EditorPage from "./pages/EditorPage";
-import LandingPage from "./components/landingpage/LandingPage";
-import Navbar from "./components/landingpage/nav/Navbar";
-import Login from "./components/Login/Login";
-import Signup from "./components/Signup/Signup";
-import Profile from "./pages/profile/Profile";
-import Problems from "./pages/Problems/Problems";
-import RankingsPage from "./pages/Rankings/Rankings";
-import ProblemTable from "./pages/Problems/ProblemTable";
-import ProblemService from "./services/ProblemService";
-import Workspace from "./components/Workspace/Workspace";
+import { AuthContext } from "./context/authContext.jsx";
+import Home from "./pages/Home.jsx";
+import EditorPage from "./pages/EditorPage.jsx";
+import LandingPage from "./components/landingpage/LandingPage.jsx";
+import Navbar from "./components/landingpage/nav/Navbar.jsx";
+import Login from "./components/Login/Login.jsx";
+import Signup from "./components/Signup/Signup.jsx";
+import Profile from "./pages/profile/Profile.jsx";
+import RankingsPage from "./pages/Rankings/Rankings.jsx";
+import ProblemTable from "./pages/Problems/ProblemTable.jsx";
+import ProblemService from "./services/ProblemService.jsx";
+import Workspace from "./components/Workspace/Workspace.jsx";
 
 const AuthenticatedRoute = ({ children }) => {
   const { user } = useContext(AuthContext);

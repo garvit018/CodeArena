@@ -57,12 +57,13 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     return () => {
       editor.toTextArea();
     };
-  }, [socketRef, roomId]);
+  }, [socketRef, roomId, onCodeChange]);
 
   // Listen for code changes from the server and update the editor
   useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
+    const socket = socketRef.current;
+    if (socket) {
+      socket.on(ACTIONS.CODE_CHANGE, ({ code }) => {
         console.log("Received code change:", code);
         if (codemirrorInstanceRef.current && code !== null && code !== undefined) {
           const currentCode = codemirrorInstanceRef.current.getValue();
@@ -73,9 +74,11 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       });
     }
     return () => {
-      socketRef.current.off(ACTIONS.CODE_CHANGE);
+      if (socket) {
+        socket.off(ACTIONS.CODE_CHANGE);
+      }
     };
-  }, [socketRef.current]);
+  }, [socketRef]);
   
 
   
