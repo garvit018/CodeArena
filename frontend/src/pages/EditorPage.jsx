@@ -78,9 +78,7 @@ class Judge0API {
 
   decodeBase64(encodedStr) {
     try {
-      return encodedStr 
-        ? decodeURIComponent(escape(atob(encodedStr))) 
-        : "";
+      return encodedStr ? decodeURIComponent(escape(atob(encodedStr))) : "";
     } catch (error) {
       console.error("Decoding error:", error);
       return "";
@@ -88,15 +86,6 @@ class Judge0API {
   }
 
   processSubmissionResults(submission) {
-    console.log("\n--- Detailed Submission Analysis ---");
-    console.log("Status Code:", submission.status.id);
-    console.log("Status Description:", submission.status.description);
-    
-    // Detailed output processing
-    console.log("\n--- Execution Details ---");
-    console.log("Time Used:", submission.time ? `${submission.time} seconds` : "N/A");
-    console.log("Memory Used:", submission.memory ? `${submission.memory} KB` : "N/A");
-
     // Prepare output object
     const output = {
       status: submission.status.description,
@@ -104,7 +93,7 @@ class Judge0API {
       memory: submission.memory ? `${submission.memory} KB` : "N/A",
       stdout: this.decodeBase64(submission.stdout),
       stderr: this.decodeBase64(submission.stderr),
-      compileOutput: this.decodeBase64(submission.compile_output)
+      compileOutput: this.decodeBase64(submission.compile_output),
     };
 
     return output;
@@ -118,20 +107,34 @@ function EditorPage() {
   const codeRef = useRef(null);
   const { roomId } = useParams();
   const [clients, setClients] = useState([]);
-  
+
   // Code Execution State
   const [languages, setLanguages] = useState([]);
   const [selectedLanguageId, setSelectedLanguageId] = useState(92); // Default to Python
+  const [editorTheme, setEditorTheme] = useState("material-darker");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [output, setOutput] = useState(null);
 
+  const editorThemes = [
+    { value: "material-darker", label: "Material Dark" },
+    { value: "monokai", label: "Monokai" },
+    { value: "base16-dark", label: "Base16 Dark" },
+    { value: "eclipse", label: "Eclipse" },
+    { value: "neo", label: "Neo" },
+  ];
+
   // Judge0 API setup
-  const JUDGE0_API_KEY = "8fd792c414msha5b799f22d55532p13345ejsnbc9d95444943";
+  const JUDGE0_API_KEY = process.env.REACT_APP_JUDGE0_API_KEY || "";
   const judge0 = new Judge0API(JUDGE0_API_KEY);
 
   // Fetch available languages on component mount
   useEffect(() => {
     const fetchLanguages = async () => {
+      if (!JUDGE0_API_KEY) {
+        toast.error("Judge0 API key is not configured");
+        return;
+      }
+
       try {
         const response = await axios.get(
           "https://judge0-ce.p.rapidapi.com/languages",
@@ -140,17 +143,19 @@ function EditorPage() {
               "x-rapidapi-key": JUDGE0_API_KEY,
               "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
             },
-          }
+          },
         );
         const filteredLanguages = response.data.filter((lang) =>
           ["C", "C++", "JavaScript", "Java", "Python", "Dart"].some((name) =>
-            lang.name.includes(name)
-          )
+            lang.name.includes(name),
+          ),
         );
         setLanguages(filteredLanguages);
-        
+
         // Set default language if available
-        const pythonLang = filteredLanguages.find(lang => lang.name.includes("Python"));
+        const pythonLang = filteredLanguages.find((lang) =>
+          lang.name.includes("Python"),
+        );
         if (pythonLang) {
           setSelectedLanguageId(pythonLang.id);
         }
@@ -161,12 +166,17 @@ function EditorPage() {
     };
 
     fetchLanguages();
-  }, []);
+  }, [JUDGE0_API_KEY]);
 
   // Handle Code Execution
   const handleExecute = async () => {
     if (!codeRef.current || !codeRef.current.trim()) {
       toast.error("Please provide valid source code.");
+      return;
+    }
+
+    if (!JUDGE0_API_KEY) {
+      toast.error("Judge0 API key is not configured");
       return;
     }
 
@@ -176,17 +186,19 @@ function EditorPage() {
     try {
       // Create submission
       const submissionResponse = await judge0.createSubmission(
-        selectedLanguageId, 
-        codeRef.current
+        selectedLanguageId,
+        codeRef.current,
       );
 
       // Get submission result
-      const submissionResult = await judge0.getSubmission(submissionResponse.token);
-      
+      const submissionResult = await judge0.getSubmission(
+        submissionResponse.token,
+      );
+
       // Process and set output
       const processedOutput = judge0.processSubmissionResults(submissionResult);
       setOutput(processedOutput);
-      
+
       // Show toast for different output scenarios
       if (processedOutput.status === "Accepted") {
         toast.success("Code executed successfully!");
@@ -199,7 +211,7 @@ function EditorPage() {
       setOutput({
         status: "Error",
         stdout: "Failed to execute code",
-        stderr: error.message
+        stderr: error.message,
       });
     } finally {
       setIsSubmitting(false);
@@ -224,6 +236,23 @@ function EditorPage() {
     </div>
   );
 
+  const ThemeSelector = () => (
+    <div className="language-selector">
+      <label htmlFor="editor-theme">Theme:</label>
+      <select
+        id="editor-theme"
+        value={editorTheme}
+        onChange={(e) => setEditorTheme(e.target.value)}
+      >
+        {editorThemes.map((theme) => (
+          <option key={theme.value} value={theme.value}>
+            {theme.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
   // Output Preview Component
   const OutputPreview = () => {
     if (!output) return null;
@@ -232,9 +261,15 @@ function EditorPage() {
       <div className="output-preview">
         <h3>Output Preview</h3>
         <div className="compile-status">
-          <p><strong>Status:</strong> {output.status}</p>
-          <p><strong>Execution Time:</strong> {output.time}</p>
-          <p><strong>Memory Used:</strong> {output.memory}</p>
+          <p>
+            <strong>Status:</strong> {output.status}
+          </p>
+          <p>
+            <strong>Execution Time:</strong> {output.time}
+          </p>
+          <p>
+            <strong>Memory Used:</strong> {output.memory}
+          </p>
         </div>
         {output.stdout && (
           <div>
@@ -258,11 +293,14 @@ function EditorPage() {
     );
   };
 
-  const handleErrors = useCallback((e) => {
-    console.log("socket error", e);
-    toast.error("Socket connection failed, try again later");
-    reactNavigator("/home");
-  }, [reactNavigator]);
+  const handleErrors = useCallback(
+    (e) => {
+      console.error("socket error", e);
+      toast.error("Socket connection failed, try again later");
+      reactNavigator("/home");
+    },
+    [reactNavigator],
+  );
 
   useEffect(() => {
     const init = async () => {
@@ -279,44 +317,42 @@ function EditorPage() {
         ({ clients, username, socketId }) => {
           if (username !== location.state?.username) {
             toast.success(` ${username} has joined the room`);
-            console.log(`${username} joined`);
           }
           setClients(clients);
-          socketRef.current.emit(ACTIONS.SYNC_CODE,{
-            code:codeRef.current,
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            code: codeRef.current,
             socketId,
           });
-        }
+        },
       );
       //listening for disconnected
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
         toast.success(`${username} left the room`);
         setClients((prev) => {
-          return prev.filter(
-            (client) => client.socketId !== socketId);
+          return prev.filter((client) => client.socketId !== socketId);
         });
       });
     };
     init();
-    return ()=>{
-       socketRef.current.disconnect();
-       socketRef.current.off(ACTIONS.JOINED);
-       socketRef.current.off(ACTIONS.DISCONNECTED);
-    }
+    return () => {
+      socketRef.current?.disconnect();
+      socketRef.current?.off(ACTIONS.JOINED);
+      socketRef.current?.off(ACTIONS.DISCONNECTED);
+    };
   }, [roomId, location.state?.username, handleErrors]);
 
-  async function copyRoomId(){
-    try{
+  async function copyRoomId() {
+    try {
       await navigator.clipboard.writeText(roomId);
       toast.success("Room ID copied to clipboard");
-    }catch(err){
-      toast.error('could not copy Room Id');
-      console.error();
+    } catch (err) {
+      toast.error("could not copy Room Id");
+      console.error(err);
     }
-  };
+  }
 
-  function leaveRoom(){
-    reactNavigator('/home');
+  function leaveRoom() {
+    reactNavigator("/home");
   }
 
   if (!location.state) {
@@ -334,30 +370,36 @@ function EditorPage() {
             ))}
           </div>
         </div>
-        <button className="btn copyBtn" onClick={copyRoomId}>Copy ROOM ID</button>
-        <button className="btn leaveBtn" onClick={leaveRoom}>Leave</button>
+        <button className="btn copyBtn" onClick={copyRoomId}>
+          Copy ROOM ID
+        </button>
+        <button className="btn leaveBtn" onClick={leaveRoom}>
+          Leave
+        </button>
       </div>
       <div className="editorWrap">
-       <div className="editor-head">
-       <LanguageSelector />
-        <div className="execution-controls">
-          <button 
-            onClick={handleExecute} 
-            disabled={isSubmitting}
-            className="execute-button"
-          >
-            {isSubmitting ? "Executing..." : "Execute Code"}
-          </button>
+        <div className="editor-head">
+          <LanguageSelector />
+          <ThemeSelector />
+          <div className="execution-controls">
+            <button
+              onClick={handleExecute}
+              disabled={isSubmitting}
+              className="execute-button"
+            >
+              {isSubmitting ? "Executing..." : "Execute Code"}
+            </button>
+          </div>
         </div>
-       </div>
-        <CollaborativeEditor 
-          socketRef={socketRef} 
-          roomId={roomId} 
-          onCodeChange={(code)=>{
+        <CollaborativeEditor
+          socketRef={socketRef}
+          roomId={roomId}
+          editorTheme={editorTheme}
+          onCodeChange={(code) => {
             codeRef.current = code;
           }}
         />
-       
+
         <OutputPreview />
       </div>
     </div>

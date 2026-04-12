@@ -27,7 +27,8 @@ const AuthenticatedRoute = ({ children }) => {
 
 const PublicRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
-  return user ? <Navigate to="/home" /> : children;
+  const isLoggedIn = user || localStorage.getItem("token");
+  return isLoggedIn ? <Navigate to="/home" /> : children;
 };
 const AuthenticatedLayout = () => (
   <>
@@ -60,7 +61,13 @@ const App = () => {
         />
 
         {/* Authenticated Routes */}
-        <Route element={<AuthenticatedRoute><AuthenticatedLayout /></AuthenticatedRoute>}>
+        <Route
+          element={
+            <AuthenticatedRoute>
+              <AuthenticatedLayout />
+            </AuthenticatedRoute>
+          }
+        >
           <Route path="/home" element={<Home />} />
           <Route path="/editor/:roomId" element={<EditorPage />} />
           <Route path="/profile" element={<Profile />} />

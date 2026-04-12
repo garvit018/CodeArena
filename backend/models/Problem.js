@@ -10,6 +10,15 @@ const ProblemSchema = new mongoose.Schema(
     description: { type: String, required: true },
     examples: { type: [String], default: [] },
     constraints: { type: [String], default: [] },
+    testCases: {
+      type: [
+        {
+          input: { type: String, default: "" },
+          output: { type: String, default: "" },
+        },
+      ],
+      default: [],
+    },
     solved: {
       type: String,
       enum: ["Yes", "No"],
@@ -18,7 +27,8 @@ const ProblemSchema = new mongoose.Schema(
     points: {
       type: Number,
       default: function () {
-        switch (this.difficulty.toLowerCase()) {
+        const level = String(this?.difficulty || "").toLowerCase();
+        switch (level) {
           case "easy":
             return 50;
           case "medium":
@@ -31,7 +41,7 @@ const ProblemSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("ProblemDetails", ProblemSchema);

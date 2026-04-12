@@ -3,6 +3,6 @@ import { solveProblem } from "../controller/ProblemController.js";
 
 const router = express.Router();
 
-router.post("/solve", solveProblem);
+router.post("/:problemId/solve", solveProblem);
 
 export default router;

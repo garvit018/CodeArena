@@ -1,7 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import Codemirror from "codemirror";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/dracula.css";
+import "codemirror/theme/material-darker.css";
+import "codemirror/theme/eclipse.css";
+import "codemirror/theme/monokai.css";
+import "codemirror/theme/neo.css";
+import "codemirror/theme/base16-dark.css";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/addon/edit/closebrackets";
 import "codemirror/addon/edit/closetag";
@@ -14,7 +18,12 @@ import "codemirror/addon/dialog/dialog";
 import "../App.css";
 import ACTIONS from "../Actions";
 
-function Editor({ socketRef, roomId, onCodeChange }) {
+function Editor({
+  socketRef,
+  roomId,
+  onCodeChange,
+  editorTheme = "material-darker",
+}) {
   const editorRef = useRef(null);
   const codemirrorInstanceRef = useRef(null);
 
@@ -22,7 +31,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     // Initialize the editor
     const editor = Codemirror.fromTextArea(editorRef.current, {
       mode: { name: "javascript", json: true },
-      theme: "dracula",
+      theme: "material-darker",
       autoCloseTags: true,
       autoCloseBrackets: true,
       lineNumbers: true,
@@ -42,16 +51,13 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       const { origin } = changes;
       const code = instance.getValue();
       onCodeChange(code);
-      console.log("Emitting code change:", code);
       if (origin !== "setValue") {
-          socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-              roomId,
-              code,
-          });
+        socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+          roomId,
+          code,
+        });
       }
-  });
-  
-    
+    });
 
     // Clean up on unmount
     return () => {
@@ -59,13 +65,22 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     };
   }, [socketRef, roomId, onCodeChange]);
 
+  useEffect(() => {
+    if (codemirrorInstanceRef.current) {
+      codemirrorInstanceRef.current.setOption("theme", editorTheme);
+    }
+  }, [editorTheme]);
+
   // Listen for code changes from the server and update the editor
   useEffect(() => {
     const socket = socketRef.current;
     if (socket) {
       socket.on(ACTIONS.CODE_CHANGE, ({ code }) => {
-        console.log("Received code change:", code);
-        if (codemirrorInstanceRef.current && code !== null && code !== undefined) {
+        if (
+          codemirrorInstanceRef.current &&
+          code !== null &&
+          code !== undefined
+        ) {
           const currentCode = codemirrorInstanceRef.current.getValue();
           if (code !== currentCode) {
             codemirrorInstanceRef.current.setValue(code);
@@ -79,9 +94,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       }
     };
   }, [socketRef]);
-  
 
-  
   return (
     <div className="editorWrapper">
       <textarea id="realTimeEditor" ref={editorRef}></textarea>

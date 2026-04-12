@@ -3,21 +3,22 @@ import Problem from "../models/Problem.js";
 import User from "../models/User.js";
 
 export const solveProblem = async (req, res) => {
-  const { userId, problemId } = req.body;
+  const userId = req.user?.id || req.body.userId;
+  const problemId = req.params.problemId || req.body.problemId;
 
   try {
-    const problem = await Problem.findOne({ id: problemId });
+    const problem = await Problem.findById(problemId);
     if (!problem) return res.status(404).json({ message: "Problem not found" });
-
-    if (problem.solved === "Yes") {
-      return res.status(400).json({ message: "Problem already solved" });
-    }
-
-    problem.solved = "Yes";
-    await problem.save();
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    const alreadySolved = user.solvedProblems.some(
+      (solvedId) => solvedId.toString() === problem._id.toString(),
+    );
+    if (alreadySolved) {
+      return res.status(400).json({ message: "Problem already solved" });
+    }
 
     let pointsToAdd = 0;
     switch (problem.difficulty) {
@@ -35,6 +36,8 @@ export const solveProblem = async (req, res) => {
     }
 
     user.points += pointsToAdd;
+    user.problemsSolved += 1;
+    user.solvedProblems.push(problem._id);
     user.tier = user.calculateTier();
     await user.save();
 

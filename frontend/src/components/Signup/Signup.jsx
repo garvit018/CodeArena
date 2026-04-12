@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 import { ToastContainer, toast } from "react-toastify"; // Import Toast notifications
 import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 import Navbar from "../landingpage/nav/Navbar.jsx";
+import authService from "../../services/authService.jsx";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -41,19 +41,14 @@ const Signup = () => {
     }
 
     try {
-      // Sending a POST request to the backend for signup
-      const response = await axios.post(
-        // 'http://localhost:5000/auth/signup', // Updated path
-        "https://codearena-653z.onrender.com/auth/signup", // Updated path
-        {
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          country: formData.country, // Include country field in request
-          institute: formData.institute, // Include institute field in request
-          course: formData.course, // Include course field in request
-        }
-      );
+      const response = await authService.signup({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        country: formData.country,
+        institute: formData.institute,
+        course: formData.course,
+      });
 
       toast.success(response.data.message); // Show success message from backend
       setTimeout(() => {
@@ -95,13 +90,19 @@ const Signup = () => {
         <div className="w-full max-w-lg bg-white rounded-xl overflow-y-auto transition-all duration-300">
           <div className="w-full bg-white">
             <div className="text-center mb-5">
-              <h2 className="text-black text-xl font-bold mb-2">Create Account</h2>
-              <p className="text-black text-sm font-semibold">Join CodeArena and level up your skills</p>
+              <h2 className="text-black text-xl font-bold mb-2">
+                Create Account
+              </h2>
+              <p className="text-black text-sm font-semibold">
+                Join CodeArena and level up your skills
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="px-4">
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Username</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Username
+                </label>
                 <input
                   type="text"
                   name="username"
@@ -114,7 +115,9 @@ const Signup = () => {
               </div>
 
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Email</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -127,7 +130,9 @@ const Signup = () => {
               </div>
 
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Password</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Password
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -141,7 +146,9 @@ const Signup = () => {
               </div>
 
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Confirm Password</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Confirm Password
+                </label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -155,7 +162,9 @@ const Signup = () => {
               </div>
 
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Country</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Country
+                </label>
                 <input
                   type="text"
                   name="country"
@@ -169,7 +178,9 @@ const Signup = () => {
 
               {/* New Fields for Institute and Course */}
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Institute</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Institute
+                </label>
                 <input
                   type="text"
                   name="institute"
@@ -182,7 +193,9 @@ const Signup = () => {
               </div>
 
               <div className="mb-5">
-                <label className="block text-xs mb-2 text-black font-semibold">Course</label>
+                <label className="block text-xs mb-2 text-black font-semibold">
+                  Course
+                </label>
                 <input
                   type="text"
                   name="course"
@@ -194,7 +207,10 @@ const Signup = () => {
                 />
               </div>
 
-              <button type="submit" className="w-full py-2 bg-black text-yellow-500 border border-black rounded-lg text-sm cursor-pointer transition-all duration-300 font-semibold hover:bg-yellow-500 hover:text-black hover:shadow-[4px_4px_0px_#000000] mb-5">
+              <button
+                type="submit"
+                className="w-full py-2 bg-black text-yellow-500 border border-black rounded-lg text-sm cursor-pointer transition-all duration-300 font-semibold hover:bg-yellow-500 hover:text-black hover:shadow-[4px_4px_0px_#000000] mb-5"
+              >
                 Sign Up
               </button>
             </form>
@@ -202,7 +218,12 @@ const Signup = () => {
             <div className="text-center mb-5 text-black px-4">
               <p>
                 Already have an account?
-                <span onClick={toggle} className="text-yellow-500 cursor-pointer font-semibold ml-1 hover:underline">Login</span>
+                <span
+                  onClick={toggle}
+                  className="text-yellow-500 cursor-pointer font-semibold ml-1 hover:underline"
+                >
+                  Login
+                </span>
               </p>
             </div>
           </div>

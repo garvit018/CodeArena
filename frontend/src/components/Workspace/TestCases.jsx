@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import httpClient, { getAuthHeaders } from "../../services/httpClient.jsx";
 
 const TestCases = ({ problemId, code, languageId }) => {
   const [testCases, setTestCases] = useState([]);
@@ -7,23 +8,17 @@ const TestCases = ({ problemId, code, languageId }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const JUDGE0_API_KEY = "71dd2f88a9mshb19930106ac79bcp175f1ejsnc92887140ab7";
+  const JUDGE0_API_KEY = process.env.REACT_APP_JUDGE0_API_KEY || "";
 
   // Fetch test cases for the specific problem
   useEffect(() => {
     const fetchProblemDetails = async () => {
       try {
-        const response = await axios.get(
-          `/api/problems/${problemId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        
-        setTestCases(response.data.testCases);
+        const response = await httpClient.get(`/api/problems/${problemId}`, {
+          headers: getAuthHeaders(),
+        });
+
+        setTestCases(response.data.testCases || []);
       } catch (error) {
         setError("Failed to load test cases");
         console.error("Test cases fetch error:", error);
@@ -31,12 +26,17 @@ const TestCases = ({ problemId, code, languageId }) => {
     };
 
     fetchProblemDetails();
-  }, [problemId, token]);
+  }, [problemId]);
 
   // Run test cases
   const runTestCases = async () => {
     if (!code.trim()) {
-      alert("Please provide valid source code.");
+      setError("Please provide valid source code.");
+      return;
+    }
+
+    if (!JUDGE0_API_KEY) {
+      setError("Judge0 API key is not configured.");
       return;
     }
 
@@ -48,14 +48,16 @@ const TestCases = ({ problemId, code, languageId }) => {
       const results = await Promise.all(
         testCases.map(async (testCase) => {
           const submissionResponse = await createSubmission(
-            languageId, 
-            code, 
-            testCase.input
+            languageId,
+            code,
+            testCase.input,
           );
 
-          const submissionResult = await getSubmission(submissionResponse.token);
+          const submissionResult = await getSubmission(
+            submissionResponse.token,
+          );
           return processTestCaseResult(submissionResult, testCase);
-        })
+        }),
       );
 
       setTestResults(results);
@@ -69,8 +71,9 @@ const TestCases = ({ problemId, code, languageId }) => {
 
   // Create submission to Judge0
   const createSubmission = async (languageId, sourceCode, stdin) => {
-    const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*";
-    
+    const url =
+      "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*";
+
     const base64SourceCode = btoa(unescape(encodeURIComponent(sourceCode)));
     const base64Stdin = btoa(unescape(encodeURIComponent(stdin)));
 
@@ -120,9 +123,7 @@ const TestCases = ({ problemId, code, languageId }) => {
   const processTestCaseResult = (submission, testCase) => {
     const decodeBase64 = (encodedStr) => {
       try {
-        return encodedStr 
-          ? decodeURIComponent(escape(atob(encodedStr))) 
-          : "";
+        return encodedStr ? decodeURIComponent(escape(atob(encodedStr))) : "";
       } catch (error) {
         console.error("Decoding error:", error);
         return "";
@@ -160,15 +161,15 @@ const TestCases = ({ problemId, code, languageId }) => {
           </thead>
           <tbody>
             {testResults.map((result, index) => (
-              <tr 
-                key={index} 
-                className={result.passed ? 'bg-green-100' : 'bg-red-100'}
+              <tr
+                key={index}
+                className={result.passed ? "bg-green-100" : "bg-red-100"}
               >
                 <td className="border p-2">{result.input}</td>
                 <td className="border p-2">{result.expectedOutput}</td>
                 <td className="border p-2">{result.actualOutput}</td>
                 <td className="border p-2">
-                  {result.passed ? '✓ Passed' : '✗ Failed'}
+                  {result.passed ? "✓ Passed" : "✗ Failed"}
                 </td>
               </tr>
             ))}
@@ -180,12 +181,12 @@ const TestCases = ({ problemId, code, languageId }) => {
 
   return (
     <div className="test-cases-container">
-      <button 
-        onClick={runTestCases} 
+      <button
+        onClick={runTestCases}
         disabled={isRunning || testCases.length === 0}
         className="run-test-cases-button"
       >
-        {isRunning ? 'Running Tests...' : 'Run Test Cases'}
+        {isRunning ? "Running Tests..." : "Run Test Cases"}
       </button>
       {renderTestResults()}
     </div>

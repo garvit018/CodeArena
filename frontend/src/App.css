@@ -1,9 +1,9 @@
-*{
+* {
   margin: 0;
   padding: 0;
 }
 
-.collab-wrapper{
+.collab-wrapper {
   height: 88vh;
   width: 98.5vw;
   display: flex;
@@ -14,7 +14,7 @@
   background-color: whitesmoke; /* Dark background */
 }
 
-.homeform-wrapper{
+.homeform-wrapper {
   background: rgb(230, 208, 208); /* Slightly lighter dark background */
   padding: 20px;
   border-radius: 10px;
@@ -23,59 +23,59 @@
   color: black; /* Yellow text */
 }
 
-footer{
+footer {
   position: fixed;
   bottom: 0;
 }
 
-footer a{
+footer a {
   color: black; /* Yellow link */
 }
 
-.collab-logo{
+.collab-logo {
   height: 60px;
   width: 60px;
   margin-bottom: 10px;
 }
 
-.logo-wrapper{
+.logo-wrapper {
   display: flex;
   align-items: center;
 }
 
-.logo-wrapper h2{
+.logo-wrapper h2 {
   font-weight: bolder;
   color: black; /* Yellow text for the header */
 }
 
-.inputGroup{
+.inputGroup {
   display: flex;
   flex-direction: column;
 }
 
-.mainLabel{
+.mainLabel {
   font-size: 16px;
   margin-bottom: 20px;
   margin-top: 0;
   color: black; /* Yellow text for the label */
 }
 
-.inputBox{
+.inputBox {
   padding: 6px;
   border-radius: 8px;
   outline: none;
   border: 2px solid #f8d210; /* Yellow border */
   margin-bottom: 14px;
   background-color: white; /* Dark background */
-  color: black; 
+  color: black;
   font-size: 15px;
 }
 
-.inputBox:focus{
+.inputBox:focus {
   box-shadow: 0 0 10px rgba(248, 210, 16, 0.6); /* Yellow glow on focus */
 }
 
-.btn{
+.btn {
   border: 1px solid black;
   padding: 10px;
   border-radius: 10px;
@@ -85,7 +85,7 @@ footer a{
   margin-bottom: 10px;
 }
 
-.joinBtn{
+.joinBtn {
   background-color: #8f7a0f; /* Yellow background */
   width: 100px;
   margin-left: auto;
@@ -93,23 +93,23 @@ footer a{
   font-weight: bold;
 }
 
-.joinBtn:hover{
+.joinBtn:hover {
   background-color: #b19111; /* Lighter yellow on hover */
 }
 
-.createInfo{
+.createInfo {
   margin: 0 auto;
   margin-top: 20px;
 }
 
-.createNewBtn{
+.createNewBtn {
   color: goldenrod; /* Yellow text */
   text-decoration: none;
   border-bottom: 1px solid #f8d210; /* Yellow underline */
   transition: all 0.3s ease-in-out;
 }
 
-.createNewBtn:hover{
+.createNewBtn:hover {
   color: green; /* Lighter yellow on hover */
   border-color: #f1c40f;
 }
@@ -117,20 +117,19 @@ footer a{
 footer {
   color: black;
 }
-footer a{
+footer a {
   color: rgb(205, 205, 48);
 }
-footer a:hover{
+footer a:hover {
   color: rgb(154, 154, 25);
 }
 
-.mainWrap{
+.mainWrap {
   display: grid;
   grid-template-columns: 230px 1fr;
-  
 }
 
-.aside{
+.aside {
   background-color: #1c1e29; /* Dark background */
   padding: 16px;
   color: #fff;
@@ -138,46 +137,45 @@ footer a:hover{
   flex-direction: column;
 }
 
-.asideInner{
+.asideInner {
   flex: 1;
-  
 }
 
-.clientsList{
+.clientsList {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-.client{
+.client {
   display: flex;
   align-items: center;
   flex-direction: column;
   font-weight: bold;
 }
 
-.username{
+.username {
   margin-top: 10px;
 }
 
-.logo{
+.logo {
   border-bottom: 1px solid #424242;
   padding-bottom: 10px;
 }
 
-.logoImage{
+.logoImage {
   height: 60px;
 }
 
-.leaveBtn{
+.leaveBtn {
   margin-top: 20px;
   background-color: #f8d210; /* Yellow background */
-  width:100%;
+  width: 100%;
   margin-left: auto;
 }
 
-.leaveBtn:hover{
+.leaveBtn:hover {
   background-color: #f1c40f; /* Lighter yellow on hover */
 }
 
@@ -185,19 +183,19 @@ footer a:hover{
   height: 100vh;
   display: flex;
   justify-content: center;
-  color:  rgb(230, 208, 208);
-  ;
+  color: #e2e8f0;
   align-items: center;
 }
 
-.editor-head{
+.editor-head {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .CodeMirror {
   height: 100% !important;
-  border: 1px solid #ccc;
-  
-  
+  border: 1px solid #334155;
 }
 
 .simple-login-logo {

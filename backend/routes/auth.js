@@ -10,6 +10,11 @@ const signup = async (req, res) => {
   }
 
   try {
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already in use" });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
@@ -30,7 +35,9 @@ const signup = async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     res.status(201).json({
       message: "User created successfully",
@@ -44,7 +51,6 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt:", { email, password });
 
   try {
     const user = await User.findOne({ email });
@@ -65,7 +71,9 @@ const login = async (req, res) => {
     res.status(200).json({ data: token, message: "Logged in successfully" });
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).json({ message: "An error occurred", error: error.message });
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
   }
 };
 
