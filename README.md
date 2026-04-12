@@ -26,6 +26,87 @@ CodeArena is a full-stack coding platform for:
 3. Code edits broadcast to other connected clients.
 4. Participants see synced code in real time.
 
+## 1.1 Flowchart Diagrams
+
+### End-to-End Platform Flow
+
+```mermaid
+flowchart TD
+   A[User Opens CodeArena] --> B{Authenticated?}
+   B -- No --> C[Login or Signup]
+   C --> D[Receive JWT Token]
+   D --> E[Open Problems Table]
+   B -- Yes --> E
+   E --> F[Select Problem]
+   F --> G[Open Workspace]
+   G --> H[Write Code]
+   H --> I[Execute via Judge0]
+   I --> J{All Test Cases Pass?}
+   J -- No --> K[Show Wrong Answer with Case Details]
+   K --> H
+   J -- Yes --> L[Submit to Backend]
+   L --> M[Mark Problem Solved]
+   M --> N[Update Points and Tier]
+   N --> O[Reflect in Profile and Rankings]
+```
+
+### Authentication and Protected Routing
+
+```mermaid
+flowchart LR
+   A[Signup Request] --> B[POST /auth/signup]
+   B --> C[Hash Password and Store User]
+   C --> D[JWT Returned]
+   D --> E[Token Stored in localStorage]
+   E --> F[Protected Route Access]
+   F --> G{Token Valid?}
+   G -- Yes --> H[Allow Route]
+   G -- No --> I[Redirect to Login]
+```
+
+### Submission Validation Flow
+
+```mermaid
+flowchart TD
+   A[User Clicks Submit] --> B[Load problem testCases]
+   B --> C{TestCases available?}
+   C -- No --> D[Fallback to execution result]
+   C -- Yes --> E[Run each test case via Judge0]
+   E --> F[Compare stdout with expected output]
+   F --> G{Mismatch or Runtime Error?}
+   G -- Yes --> H[Return per-case diagnostics]
+   H --> I[Display Input, Expected, Actual, Error]
+   G -- No --> J[All cases pass]
+   J --> K[PATCH /api/problems/:problemId/solve]
+   K --> L{Already solved?}
+   L -- Yes --> M[Show solved info]
+   L -- No --> N[Award points and update tier]
+```
+
+### Realtime Collaboration Flow
+
+```mermaid
+sequenceDiagram
+   participant U1 as User 1
+   participant FE1 as Frontend 1
+   participant WS as Socket Server
+   participant FE2 as Frontend 2
+   participant U2 as User 2
+
+   U1->>FE1: Join room
+   FE1->>WS: ACTIONS.JOIN(roomId, username)
+   U2->>FE2: Join same room
+   FE2->>WS: ACTIONS.JOIN(roomId, username)
+   WS-->>FE1: ACTIONS.JOINED(clients)
+   WS-->>FE2: ACTIONS.JOINED(clients)
+   U1->>FE1: Type code
+   FE1->>WS: ACTIONS.CODE_CHANGE(code)
+   WS-->>FE2: ACTIONS.CODE_CHANGE(code)
+   U2->>FE2: Leave room
+   FE2->>WS: disconnect
+   WS-->>FE1: ACTIONS.DISCONNECTED(user)
+```
+
 ## 2. Architecture
 
 ### Frontend
